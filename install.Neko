@@ -1,47 +1,48 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-# အရောင်များ
+# အရောင်သတ်မှတ်ချက်
 GREEN='\033[92m'
 BLUE='\033[94m'
 YELLOW='\033[93m'
+RED='\033[91m'
 NC='\033[0m'
 
-echo -e "${GREEN}[*] device34Neko Installer Fix Starting...${NC}"
+echo -e "${GREEN}[*] device34Neko All-in-One Installer Fix Starting...${NC}"
 
 # ၁။ လိုအပ်တာတွေ အရင်သွင်းမယ်
 apt update && apt upgrade -y
 pkg install python clang curl wget git -y
 pip install requests
 
-# ၂။ Folder အဟောင်းရှိရင် ဖျက်ပြီး အသစ်ဆောက်မယ်
+# ၂။ Folder ပြင်ဆင်ခြင်း
 rm -rf ~/Neko
 mkdir -p ~/Neko
 cd ~/Neko
 
-# ၃။ ဖုန်းရဲ့ Bit ကို စစ်ပြီး မှန်ကန်တဲ့ဖိုင်ကို ဒေါင်းယူမယ်
-ARCH=$(getprop ro.product.cpu.abi)
+# ၃။ ဒေါင်းလုဒ်ဆွဲမည့်အပိုင်း (Link များကို ညိုကီ့ Repo ထဲက ဖိုင်အမည်များအတိုင်း ပြင်ထားသည်)
 BASE="https://raw.githubusercontent.com/sandar18705-del/Neko/main"
+ARCH=$(getprop ro.product.cpu.abi)
+
+echo -e "${BLUE}[*] ဖိုင်များကို ဒေါင်းလုဒ်ဆွဲနေပါသည်...${NC}"
 
 if [[ "$ARCH" == *"arm64"* ]]; then
-    echo -e "${BLUE}[*] 64-bit Device တွေ့ရှိပါတယ်... 64-bit version ကို ဒေါင်းနေပါတယ်။${NC}"
-    # ပုံ (၁) အရ ညိုကီ့ Repo ထဲမှာ နာမည်က device34mmh_64bit.so ဖြစ်နေလို့ အဲဒီအတိုင်း ဒေါင်းရပါမယ်
+    echo -e "${GREEN}[+] 64-bit Device တွေ့ရှိရပါသည်...${NC}"
+    # ညိုကီ့ Repo ထဲက ဖိုင်အမည် အမှန်အတိုင်း ဒေါင်းပါမည်
     curl -Lk "$BASE/device34mmh_64bit.so" -o device34Neko.so
 else
-    echo -e "${BLUE}[*] 32-bit Device တွေ့ရှိပါတယ်... 32-bit version ကို ဒေါင်းနေပါတယ်။${NC}"
-    # 32-bit အတွက် နာမည်ကို device34Neko.so အတိုင်း ဒေါင်းမယ်
+    echo -e "${GREEN}[+] 32-bit Device တွေ့ရှိရပါသည်...${NC}"
     curl -Lk "$BASE/device34Neko.so" -o device34Neko.so
 fi
 
-# ၄။ Starter python ဖိုင်ကို ဒေါင်းမယ်
-echo -e "${BLUE}[*] Downloading starter script...${NC}"
+# Runner ဖိုင်ကို ဒေါင်းမည်
 curl -Lk "$BASE/device34Neko_run.py" -o device34Neko_run.py
 
-# ၅။ အောင်မြင်ကြောင်း စစ်ဆေးခြင်း
+# ၄။ ဖိုင်တကယ် ရှိမရှိ စစ်ဆေးခြင်း
 if [ -s "device34Neko.so" ]; then
-    echo -e "\n${GREEN}[✔] အားလုံး အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ!${NC}"
-    echo -e "${YELLOW}အသုံးပြုရန်: cd ~/Neko && python device34Neko_run.py${NC}"
-    # တန်းပြီး run ပေးမယ်
+    echo -e "\n${GREEN}[✔] အားလုံး အဆင်ပြေသွားပါပြီ!${NC}"
+    echo -e "${YELLOW}Starting script...${NC}"
     python device34Neko_run.py
 else
-    echo -e "${RED}[!] Error: .so ဖိုင်ဒေါင်းတာ မအောင်မြင်ပါ။ (Link မှားနေနိုင်ပါသည်)${NC}"
+    echo -e "${RED}[!] Error: .so ဖိုင်ဒေါင်းတာ မအောင်မြင်ပါ။ GitHub မှာ ဖိုင်နာမည် မှားနေနိုင်ပါသည်။${NC}"
+    echo -e "${YELLOW}[*] Repo ထဲမှာ 'device34mmh_64bit.so' ဟုတ်မဟုတ် ပြန်စစ်ပါ ညိုကီ။${NC}"
 fi

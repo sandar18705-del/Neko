@@ -3,44 +3,52 @@
 GREEN='\033[92m'
 BLUE='\033[94m'
 YELLOW='\033[93m'
+RED='\033[91m'
 NC='\033[0m'
 
-echo -e "${GREEN}[*] device34Neko Stable Installer Starting...${NC}"
+echo -e "${GREEN}[*] device34Neko All-in-One Final Solution Starting...${NC}"
 
-# ၁။ လိုအပ်သော Packages များ သွင်းခြင်း
+# ၁။ အခြေခံ လိုအပ်ချက်များ သွင်းခြင်း
 cd $HOME
-pkg update && pkg upgrade -y
+pkg update -y
 pkg install tur-repo -y
 pkg install python3.11 clang curl wget git -y
 
-# ၂။ Folder အဟောင်းရှင်းပြီး အသစ်ဆောက်ခြင်း
+# ၂။ Folder ပြင်ဆင်ခြင်း
 rm -rf ~/Neko
 mkdir -p ~/Neko
 cd ~/Neko
 
-# ၃။ Python 3.11 အတွက် သီးသန့် ပတ်ဝန်းကျင် (Venv) ဆောက်ခြင်း
-echo -e "${BLUE}[*] Creating Python 3.11 Virtual Environment...${NC}"
+# ၃။ Virtual Environment ဆောက်ခြင်း (Version Error ကို အမြစ်ဖြတ်ရန်)
+echo -e "${BLUE}[*] Creating Isolated Python Environment...${NC}"
 python3.11 -m venv venv
-source venv/bin/activate
 
-# requests ကို venv ထဲမှာ သွင်းခြင်း
-pip install --upgrade pip
-pip install requests
+# venv ထဲမှာ requests သွင်းခြင်း
+echo -e "${BLUE}[*] Installing requirements in virtual environment...${NC}"
+./venv/bin/pip install --upgrade pip
+./venv/bin/pip install requests
 
-# ၄။ GitHub မှ ဖိုင်များကို ဒေါင်းခြင်း
+# ၄။ GitHub မှ ဖိုင်များကို အတိအကျ ဒေါင်းယူခြင်း
 BASE="https://raw.githubusercontent.com/sandar18705-del/Neko/main"
 ARCH=$(getprop ro.product.cpu.abi)
 
+echo -e "${BLUE}[*] Downloading your script files...${NC}"
+
 if [[ "$ARCH" == *"arm64"* ]]; then
+    echo -e "${GREEN}[+] Detected 64-bit Device.${NC}"
     curl -Lk "$BASE/device34mmh_64bit.so" -o device34Neko.so
 else
+    echo -e "${GREEN}[+] Detected 32-bit Device.${NC}"
     curl -Lk "$BASE/device34Neko.so" -o device34Neko.so
 fi
+
 curl -Lk "$BASE/device34Neko_run.py" -o device34Neko_run.py
 
-# ၅။ စတင် Run ခြင်း
+# ၅။ တိုက်ရိုက် စတင် Run ခြင်း
 if [ -s "device34Neko.so" ]; then
-    echo -e "${GREEN}[✔] Setup Complete!${NC}"
-    # venv ထဲက python ကို တိုက်ရိုက်သုံးပြီး run ပါမည်
+    echo -e "\n${GREEN}[✔] Everything is ready! Starting now...${NC}"
+    # venv ထဲက python ကို သုံးပြီး အသေအချာ run ပါသည်
     ~/Neko/venv/bin/python device34Neko_run.py
+else
+    echo -e "${RED}[!] Error: .so file download failed. Check your repo!${NC}"
 fi

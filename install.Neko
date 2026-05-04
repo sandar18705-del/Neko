@@ -6,15 +6,13 @@ YELLOW='\033[93m'
 RED='\033[91m'
 NC='\033[0m'
 
-echo -e "${GREEN}[*] device34Neko All-in-One Final Fix Starting...${NC}"
+echo -e "${GREEN}[*] device34Neko All-in-One Installer Starting...${NC}"
 
-# ၁။ Python 3.11 နှင့် လိုအပ်သော Tools များ သွင်းခြင်း
-echo -e "${BLUE}[*] Python 3.11 နှင့် လိုအပ်ချက်များကို ပြင်ဆင်နေပါသည်...${NC}"
+# ၁။ Python 3.11 နှင့် လိုအပ်သည်များ သွင်းခြင်း (Version Error ကို ဖြေရှင်းရန်)
+echo -e "${BLUE}[*] Python 3.11 ကို ပြင်ဆင်နေပါသည်...${NC}"
 pkg update && pkg upgrade -y
 pkg install tur-repo -y
 pkg install python3.11 clang curl wget git -y
-
-# requests library ကို python 3.11 အတွက် သီးသန့်သွင်းခြင်း
 python3.11 -m pip install requests
 
 # ၂။ Folder ပြင်ဆင်ခြင်း
@@ -22,30 +20,27 @@ rm -rf ~/Neko
 mkdir -p ~/Neko
 cd ~/Neko
 
-# ၃။ Architecture အလိုက် GitHub မှ ဖိုင်များကို တိုက်ရိုက်ဒေါင်းခြင်း
+# ၃။ GitHub မှ ဖိုင်များကို တိုက်ရိုက်ဒေါင်းခြင်း
 ARCH=$(getprop ro.product.cpu.abi)
 BASE="https://raw.githubusercontent.com/sandar18705-del/Neko/main"
 
-echo -e "${BLUE}[*] GitHub မှ ဖိုင်များကို ရယူနေပါသည်...${NC}"
-
 if [[ "$ARCH" == *"arm64"* ]]; then
-    echo -e "${GREEN}[+] 64-bit Device အတွက် 'device34mmh_64bit.so' ကို ဒေါင်းနေပါသည်...${NC}"
-    # Repo ထဲက အမည်အမှန်အတိုင်း ဒေါင်းပြီး Python import ရအောင် နာမည်ပြောင်းသိမ်းမည်
+    echo -e "${GREEN}[+] 64-bit Device detected. Downloading library...${NC}"
+    # ညိုကီ့ Repo ထဲက အမည်အမှန် device34mmh_64bit.so ကို ဒေါင်းပြီး device34Neko.so အဖြစ်သိမ်းမည်
     curl -Lk "$BASE/device34mmh_64bit.so" -o device34Neko.so
 else
-    echo -e "${GREEN}[+] 32-bit Device အတွက် 'device34Neko.so' ကို ဒေါင်းနေပါသည်...${NC}"
+    echo -e "${GREEN}[+] 32-bit Device detected. Downloading library...${NC}"
     curl -Lk "$BASE/device34Neko.so" -o device34Neko.so
 fi
 
-# Runner Python ဖိုင်ကို ဒေါင်းယူခြင်း
+# Runner ဖိုင် ဒေါင်းခြင်း
 curl -Lk "$BASE/device34Neko_run.py" -o device34Neko_run.py
 
-# ၄။ အောင်မြင်မှု ရှိမရှိ စစ်ဆေးပြီး Python 3.11 ဖြင့် အသေအချာ Run ခြင်း
+# ၄။ Python 3.11 ဖြင့် တိုက်ရိုက် Run ခြင်း
 if [ -s "device34Neko.so" ]; then
-    echo -e "\n${GREEN}[✔] Installation အောင်မြင်သွားပါပြီ!${NC}"
-    echo -e "${YELLOW}[*] Python 3.11 ဖြင့် စတင်ပတ်မောင်းနေပါသည်...${NC}"
-    # Python 3.13 ၏ Version Error ကို ကျော်လွှားရန် 3.11 ဖြင့် တိုက်ရိုက် run သည်
+    echo -e "\n${GREEN}[✔] အကုန်လုံး အဆင်ပြေသွားပါပြီ!${NC}"
+    echo -e "${YELLOW}[*] Python 3.11 ဖြင့် စတင်နေပါသည်...${NC}"
     python3.11 device34Neko_run.py
 else
-    echo -e "${RED}[!] Error: ဖိုင်ဒေါင်းလုဒ်ဆွဲခြင်း မအောင်မြင်ပါ။ အင်တာနက် ပြန်စစ်ပေးပါ။${NC}"
+    echo -e "${RED}[!] Error: ဒေါင်းလုဒ်ဆွဲခြင်း မအောင်မြင်ပါ။${NC}"
 fi

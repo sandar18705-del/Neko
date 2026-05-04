@@ -1,0 +1,32 @@
+#!/data/data/com.termux/files/usr/bin/bash
+
+echo -e "\033[92m[*] device34Neko Installer Starting...\033[0m"
+
+# ၁။ လိုအပ်တာတွေ အရင်သွင်းမယ်
+apt update && apt upgrade -y
+pkg install python -y
+pip install requests
+
+# ၂။ Folder အဟောင်းရှိရင် ဖျက်ပြီး အသစ်ဆောက်မယ်
+rm -rf ~/Neko
+mkdir -p ~/Neko
+cd ~/Neko
+
+# ၃။ ဖုန်းရဲ့ Bit ကို စစ်ပြီး မှန်ကန်တဲ့ဖိုင်ကို ဒေါင်းမယ်
+ARCH=$(getprop ro.product.cpu.abi)
+
+if [[ "$ARCH" == *"arm64"* ]]; then
+    echo -e "\033[94m[*] 64-bit Device တွေ့ရှိပါတယ်... 64-bit version ကို ဒေါင်းနေပါတယ်...\033[0m"
+    # 64-bit အတွက် GitHub က device34Neko_64bit.so ကို ဒေါင်းပြီး device34Neko.so အဖြစ် သိမ်းမယ်
+    curl -L -o device34Neko.so https://raw.githubusercontent.com/sandar18705-del/Neko/main/device34Neko_64bit.so
+else
+    echo -e "\033[94m[*] 32-bit Device တွေ့ရှိပါတယ်... 32-bit version ကို ဒေါင်းနေပါတယ်...\033[0m"
+    # 32-bit အတွက် GitHub က device34Neko.so ကို ဒေါင်းပြီး device34Neko.so အဖြစ်ပဲ သိမ်းမယ်
+    curl -L -o device34Neko.so https://raw.githubusercontent.com/sandar18705-del/Neko/main/device34Neko.so
+fi
+
+# ၄။ Starter python ဖိုင်ကို ဒေါင်းမယ်
+curl -L -o device34Neko_run.py https://raw.githubusercontent.com/sandar18705-del/Neko/main/device34Neko_run.py
+
+echo -e "\033[92m[✔] အားလုံး အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ!\033[0m"
+echo -e "\033[93mအသုံးပြုရန်: cd ~/Neko && python device34Neko_run.py\033[0m"

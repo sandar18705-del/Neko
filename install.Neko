@@ -1,18 +1,22 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
+# အရောင်သတ်မှတ်ချက်များ
 GREEN='\033[92m'
 BLUE='\033[94m'
 YELLOW='\033[93m'
 RED='\033[91m'
 NC='\033[0m'
 
-echo -e "${GREEN}[*] device34Neko All-in-One Installer Starting...${NC}"
+echo -e "${GREEN}[*] device34Neko Final Connector Starting...${NC}"
 
-# ၁။ Python 3.11 နှင့် လိုအပ်သည်များ သွင်းခြင်း (Version Error ကို ဖြေရှင်းရန်)
-echo -e "${BLUE}[*] Python 3.11 ကို ပြင်ဆင်နေပါသည်...${NC}"
+# ၁။ Python 3.11 နှင့် လိုအပ်သည်များကို အသေအချာသွင်းခြင်း
+echo -e "${BLUE}[*] Python 3.11 နှင့် Dependencies များကို စစ်ဆေးနေပါသည်...${NC}"
 pkg update && pkg upgrade -y
 pkg install tur-repo -y
 pkg install python3.11 clang curl wget git -y
+
+# Python 3.11 အတွက် requests ကို သေချာပေါက်သွင်းပေးခြင်း (ဒါအဓိကပါ)
+echo -e "${BLUE}[*] Python 3.11 အတွက် requests library သွင်းနေပါသည်...${NC}"
 python3.11 -m pip install requests
 
 # ၂။ Folder ပြင်ဆင်ခြင်း
@@ -20,26 +24,26 @@ rm -rf ~/Neko
 mkdir -p ~/Neko
 cd ~/Neko
 
-# ၃။ GitHub မှ ဖိုင်များကို တိုက်ရိုက်ဒေါင်းခြင်း
-ARCH=$(getprop ro.product.cpu.abi)
+# ၃။ ဒေါင်းလုဒ်ဆွဲခြင်း
 BASE="https://raw.githubusercontent.com/sandar18705-del/Neko/main"
+ARCH=$(getprop ro.product.cpu.abi)
 
 if [[ "$ARCH" == *"arm64"* ]]; then
-    echo -e "${GREEN}[+] 64-bit Device detected. Downloading library...${NC}"
-    # ညိုကီ့ Repo ထဲက အမည်အမှန် device34mmh_64bit.so ကို ဒေါင်းပြီး device34Neko.so အဖြစ်သိမ်းမည်
+    echo -e "${GREEN}[+] 64-bit Device detected.${NC}"
     curl -Lk "$BASE/device34mmh_64bit.so" -o device34Neko.so
 else
-    echo -e "${GREEN}[+] 32-bit Device detected. Downloading library...${NC}"
+    echo -e "${GREEN}[+] 32-bit Device detected.${NC}"
     curl -Lk "$BASE/device34Neko.so" -o device34Neko.so
 fi
 
 # Runner ဖိုင် ဒေါင်းခြင်း
 curl -Lk "$BASE/device34Neko_run.py" -o device34Neko_run.py
 
-# ၄။ Python 3.11 ဖြင့် တိုက်ရိုက် Run ခြင်း
+# ၄။ Python 3.11 ဖြင့် အတိအကျ Run ခြင်း
 if [ -s "device34Neko.so" ]; then
-    echo -e "\n${GREEN}[✔] အကုန်လုံး အဆင်ပြေသွားပါပြီ!${NC}"
-    echo -e "${YELLOW}[*] Python 3.11 ဖြင့် စတင်နေပါသည်...${NC}"
+    echo -e "\n${GREEN}[✔] Installation အောင်မြင်ပါပြီ!${NC}"
+    echo -e "${YELLOW}[*] Python 3.11 ဖြင့် စတင်အသုံးပြုနေပါသည်...${NC}"
+    # Error မတက်အောင် python3.11 ကို တိုက်ရိုက်ခေါ်သုံးပါသည်
     python3.11 device34Neko_run.py
 else
     echo -e "${RED}[!] Error: ဒေါင်းလုဒ်ဆွဲခြင်း မအောင်မြင်ပါ။${NC}"

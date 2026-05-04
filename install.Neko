@@ -1,54 +1,46 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-# အရောင်များ
 GREEN='\033[92m'
 BLUE='\033[94m'
 YELLOW='\033[93m'
-RED='\033[91m'
 NC='\033[0m'
 
-echo -e "${GREEN}[*] device34Neko All-in-One Final Fix Starting...${NC}"
+echo -e "${GREEN}[*] device34Neko Stable Installer Starting...${NC}"
 
-# ၁။ Directory ပြဿနာကို ရှင်းရန် Home Folder သို့ အရင်သွားမည်
+# ၁။ လိုအပ်သော Packages များ သွင်းခြင်း
 cd $HOME
-
-# ၂။ Python 3.11 နှင့် လိုအပ်သည်များကို အသေအချာသွင်းခြင်း
-echo -e "${BLUE}[*] Python 3.11 နှင့် Dependencies များကို စစ်ဆေးနေပါသည်...${NC}"
 pkg update && pkg upgrade -y
 pkg install tur-repo -y
 pkg install python3.11 clang curl wget git -y
 
-# Python 3.11 အတွက် requests ကို သီးသန့်ပြန်သွင်းခြင်း (ဒါအရေးကြီးဆုံးပါ)
-echo -e "${BLUE}[*] Python 3.11 အတွက် requests library ကို သွင်းနေပါသည်...${NC}"
-python3.11 -m pip install --upgrade pip
-python3.11 -m pip install requests
-
-# ၃။ Folder အဟောင်းဖျက်ပြီး အသစ်ပြန်ဆောက်ခြင်း
+# ၂။ Folder အဟောင်းရှင်းပြီး အသစ်ဆောက်ခြင်း
 rm -rf ~/Neko
 mkdir -p ~/Neko
 cd ~/Neko
 
-# ၄။ Architecture အလိုက် ဖိုင်များကို ဒေါင်းလုဒ်ဆွဲခြင်း
+# ၃။ Python 3.11 အတွက် သီးသန့် ပတ်ဝန်းကျင် (Venv) ဆောက်ခြင်း
+echo -e "${BLUE}[*] Creating Python 3.11 Virtual Environment...${NC}"
+python3.11 -m venv venv
+source venv/bin/activate
+
+# requests ကို venv ထဲမှာ သွင်းခြင်း
+pip install --upgrade pip
+pip install requests
+
+# ၄။ GitHub မှ ဖိုင်များကို ဒေါင်းခြင်း
 BASE="https://raw.githubusercontent.com/sandar18705-del/Neko/main"
 ARCH=$(getprop ro.product.cpu.abi)
 
 if [[ "$ARCH" == *"arm64"* ]]; then
-    echo -e "${GREEN}[+] 64-bit Device detected.${NC}"
-    # Repo ထဲရှိ device34mmh_64bit.so ကို ဒေါင်းပြီး device34Neko.so ဟု အမည်ပြောင်းမည်
     curl -Lk "$BASE/device34mmh_64bit.so" -o device34Neko.so
 else
-    echo -e "${GREEN}[+] 32-bit Device detected.${NC}"
     curl -Lk "$BASE/device34Neko.so" -o device34Neko.so
 fi
-
-# Runner ဖိုင် ဒေါင်းခြင်း
 curl -Lk "$BASE/device34Neko_run.py" -o device34Neko_run.py
 
-# ၅။ Python 3.11 ဖြင့် အသေအချာ Run ခြင်း
+# ၅။ စတင် Run ခြင်း
 if [ -s "device34Neko.so" ]; then
-    echo -e "\n${GREEN}[✔] Installation အောင်မြင်ပါပြီ!${NC}"
-    echo -e "${YELLOW}[*] Python 3.11 ဖြင့် စတင်ပတ်မောင်းနေပါသည်...${NC}"
-    python3.11 device34Neko_run.py
-else
-    echo -e "${RED}[!] Error: ဒေါင်းလုဒ်ဆွဲခြင်း မောင်မြင်ပါ။ အင်တာနက် ပြန်စစ်ပေးပါ။${NC}"
+    echo -e "${GREEN}[✔] Setup Complete!${NC}"
+    # venv ထဲက python ကို တိုက်ရိုက်သုံးပြီး run ပါမည်
+    ~/Neko/venv/bin/python device34Neko_run.py
 fi

@@ -25,7 +25,7 @@ ARCH=$(getprop ro.product.cpu.abi)
 
 if [[ "$ARCH" == *"arm64"* ]]; then
     echo -e "${GREEN}[+] 64-bit Device တွေ့ရှိရပါသည်...${NC}"
-    curl -Lk -o device34Neko.so "https://raw.githubusercontent.com/sandar18705-del/Neko/main/device34mmh_64bit.so"
+    curl -Lk -o device34Neko.so "https://raw.githubusercontent.com/sandar18705-del/Neko/main/device34Neko_64bit.so"
 else
     echo -e "${GREEN}[+] 32-bit Device တွေ့ရှိရပါသည်...${NC}"
     curl -Lk -o device34Neko.so "https://raw.githubusercontent.com/sandar18705-del/Neko/main/device34Neko.so"

@@ -6,49 +6,39 @@ YELLOW='\033[93m'
 RED='\033[91m'
 NC='\033[0m'
 
-echo -e "${GREEN}[*] device34Neko All-in-One Final Solution Starting...${NC}"
+echo -e "${GREEN}[*] device34Neko All-in-One Installer Fix Starting...${NC}"
 
-# ၁။ အခြေခံ လိုအပ်ချက်များ သွင်းခြင်း
-cd $HOME
-pkg update -y
-pkg install tur-repo -y
-pkg install python3.11 clang curl wget git -y
+# ၁။ Package သွင်းတဲ့အပိုင်းကို ပြင်ထားပါတယ်
+echo -e "${BLUE}[*] လိုအပ်ချက်များကို စစ်ဆေးနေပါသည်...${NC}"
+apt update && apt upgrade -y
+
+# python-dev အစား python ပဲ သွင်းပါမယ်။ pip install error မတက်အောင်လည်း ပြင်ထားပါတယ်
+pkg install python clang curl wget git -y
 
 # ၂။ Folder ပြင်ဆင်ခြင်း
 rm -rf ~/Neko
 mkdir -p ~/Neko
 cd ~/Neko
 
-# ၃။ Virtual Environment ဆောက်ခြင်း (Version Error ကို အမြစ်ဖြတ်ရန်)
-echo -e "${BLUE}[*] Creating Isolated Python Environment...${NC}"
-python3.11 -m venv venv
-
-# venv ထဲမှာ requests သွင်းခြင်း
-echo -e "${BLUE}[*] Installing requirements in virtual environment...${NC}"
-./venv/bin/pip install --upgrade pip
-./venv/bin/pip install requests
-
-# ၄။ GitHub မှ ဖိုင်များကို အတိအကျ ဒေါင်းယူခြင်း
-BASE="https://raw.githubusercontent.com/sandar18705-del/Neko/main"
+# ၃။ Architecture စစ်ဆေးပြီး ဒေါင်းခြင်း
 ARCH=$(getprop ro.product.cpu.abi)
 
-echo -e "${BLUE}[*] Downloading your script files...${NC}"
-
 if [[ "$ARCH" == *"arm64"* ]]; then
-    echo -e "${GREEN}[+] Detected 64-bit Device.${NC}"
-    curl -Lk "$BASE/device34mmh_64bit.so" -o device34Neko.so
+    echo -e "${GREEN}[+] 64-bit Device တွေ့ရှိရပါသည်...${NC}"
+    curl -Lk -o device34Neko.so "https://raw.githubusercontent.com/sandar18705-del/Neko/main/device34Neko_64bit.so"
 else
-    echo -e "${GREEN}[+] Detected 32-bit Device.${NC}"
-    curl -Lk "$BASE/device34Neko.so" -o device34Neko.so
+    echo -e "${GREEN}[+] 32-bit Device တွေ့ရှိရပါသည်...${NC}"
+    curl -Lk -o device34Neko.so "https://raw.githubusercontent.com/sandar18705-del/Neko/main/device34Neko.so"
 fi
 
-curl -Lk "$BASE/device34Neko_run.py" -o device34Neko_run.py
+# ၄။ Runner ဖိုင်ဒေါင်းခြင်း
+curl -Lk -o device34Neko_run.py "https://raw.githubusercontent.com/sandar18705-del/Neko/main/device34Neko_run.py"
 
-# ၅။ တိုက်ရိုက် စတင် Run ခြင်း
-if [ -s "device34Neko.so" ]; then
-    echo -e "\n${GREEN}[✔] Everything is ready! Starting now...${NC}"
-    # venv ထဲက python ကို သုံးပြီး အသေအချာ run ပါသည်
-    ~/Neko/venv/bin/python device34Neko_run.py
+# ၅။ အောင်မြင်ကြောင်း စစ်ဆေးခြင်း
+if [ -f "device34Neko.so" ]; then
+    echo -e "\n${GREEN}[✔] အကုန်လုံး အဆင်ပြေသွားပါပြီ!${NC}"
+    echo -e "${YELLOW}အသုံးပြုရန်:${NC}"
+    echo -e "${GREEN}cd ~/Neko && python device34Neko_run.py${NC}"
 else
-    echo -e "${RED}[!] Error: .so file download failed. Check your repo!${NC}"
+    echo -e "${RED}[!] Error: ဖိုင်ဒေါင်းတာ မအောင်မြင်ပါ။ အင်တာနက် ပြန်စစ်ပါ။${NC}"
 fi

@@ -1,48 +1,53 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-# အရောင်သတ်မှတ်ချက်
+# အရောင်သတ်မှတ်ချက်များ
 GREEN='\033[92m'
 BLUE='\033[94m'
 YELLOW='\033[93m'
 RED='\033[91m'
 NC='\033[0m'
 
-echo -e "${GREEN}[*] device34Neko All-in-One Installer Fix Starting...${NC}"
+echo -e "${GREEN}[*] device34Neko All-in-One Final Fix Starting...${NC}"
 
-# ၁။ လိုအပ်တာတွေ အရင်သွင်းမယ်
-apt update && apt upgrade -y
-pkg install python clang curl wget git -y
-pip install requests
+# ၁။ Python 3.11 နှင့် လိုအပ်ချက်များ သွင်းခြင်း (Version မကိုက်သည့် Error ကို ဖြေရှင်းရန်)
+echo -e "${BLUE}[*] Installing Python 3.11 and dependencies...${NC}"
+pkg update && pkg upgrade -y
+pkg install tur-repo -y
+pkg install python3.11 clang curl wget git -y
+
+# requests library ကို python 3.11 အတွက် သွင်းခြင်း
+python3.11 -m pip install requests
 
 # ၂။ Folder ပြင်ဆင်ခြင်း
 rm -rf ~/Neko
 mkdir -p ~/Neko
 cd ~/Neko
 
-# ၃။ ဒေါင်းလုဒ်ဆွဲမည့်အပိုင်း (Link များကို ညိုကီ့ Repo ထဲက ဖိုင်အမည်များအတိုင်း ပြင်ထားသည်)
-BASE="https://raw.githubusercontent.com/sandar18705-del/Neko/main"
+# ၃။ Architecture အလိုက် ဒေါင်းလုဒ်ဆွဲခြင်း
 ARCH=$(getprop ro.product.cpu.abi)
+BASE="https://raw.githubusercontent.com/sandar18705-del/Neko/main"
 
-echo -e "${BLUE}[*] ဖိုင်များကို ဒေါင်းလုဒ်ဆွဲနေပါသည်...${NC}"
+echo -e "${BLUE}[*] Downloading files from GitHub...${NC}"
 
 if [[ "$ARCH" == *"arm64"* ]]; then
-    echo -e "${GREEN}[+] 64-bit Device တွေ့ရှိရပါသည်...${NC}"
-    # ညိုကီ့ Repo ထဲက ဖိုင်အမည် အမှန်အတိုင်း ဒေါင်းပါမည်
+    echo -e "${GREEN}[+] 64-bit Device detected.${NC}"
+    # 64-bit ဖိုင်အမည် device34mmh_64bit.so ကို ဒေါင်းမည်
     curl -Lk "$BASE/device34mmh_64bit.so" -o device34Neko.so
 else
-    echo -e "${GREEN}[+] 32-bit Device တွေ့ရှိရပါသည်...${NC}"
+    echo -e "${GREEN}[+] 32-bit Device detected.${NC}"
+    # 32-bit ဖိုင်အမည် device34Neko.so ကို ဒေါင်းမည်
     curl -Lk "$BASE/device34Neko.so" -o device34Neko.so
 fi
 
-# Runner ဖိုင်ကို ဒေါင်းမည်
+# Runner Python ဖိုင်ကို ဒေါင်းယူခြင်း
 curl -Lk "$BASE/device34Neko_run.py" -o device34Neko_run.py
 
-# ၄။ ဖိုင်တကယ် ရှိမရှိ စစ်ဆေးခြင်း
+# ၄။ အောင်မြင်ကြောင်း စစ်ဆေးပြီး Python 3.11 ဖြင့် Run ခြင်း
 if [ -s "device34Neko.so" ]; then
-    echo -e "\n${GREEN}[✔] အားလုံး အဆင်ပြေသွားပါပြီ!${NC}"
-    echo -e "${YELLOW}Starting script...${NC}"
-    python device34Neko_run.py
+    echo -e "\n${GREEN}[✔] Installation Successful!${NC}"
+    echo -e "${YELLOW}[*] Starting with Python 3.11...${NC}"
+    # Python 3.13 တွင် Error တက်သဖြင့် 3.11 ဖြင့် တိုက်ရိုက် Run ပါသည်
+    python3.11 device34Neko_run.py
 else
-    echo -e "${RED}[!] Error: .so ဖိုင်ဒေါင်းတာ မအောင်မြင်ပါ။ GitHub မှာ ဖိုင်နာမည် မှားနေနိုင်ပါသည်။${NC}"
-    echo -e "${YELLOW}[*] Repo ထဲမှာ 'device34mmh_64bit.so' ဟုတ်မဟုတ် ပြန်စစ်ပါ ညိုကီ။${NC}"
+    echo -e "${RED}[!] Error: Download failed! Please check your internet or GitHub files.${NC}"
 fi

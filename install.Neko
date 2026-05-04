@@ -6,40 +6,43 @@ YELLOW='\033[93m'
 RED='\033[91m'
 NC='\033[0m'
 
-echo -e "${GREEN}[*] device34Neko All-in-One Installer Fix Starting...${NC}"
+echo -e "${GREEN}[*] device34Neko All-in-One Installer Starting...${NC}"
 
-# ၁။ Package များ စစ်ဆေးခြင်း
-echo -e "${BLUE}[*] လိုအပ်ချက်များကို စစ်ဆေးနေပါသည်...${NC}"
+# ၁။ လိုအပ်သော Package များ စစ်ဆေးခြင်း
+echo -e "${BLUE}[*] Updating and installing dependencies...${NC}"
 apt update && apt upgrade -y
 pkg install python clang curl wget git -y
+pip install requests
 
-# ၂။ Folder ပြင်ဆင်ခြင်း
+# ၂။ Directory ပြင်ဆင်ခြင်း
 rm -rf ~/Neko
 mkdir -p ~/Neko
 cd ~/Neko
 
-# ၃။ Architecture အလိုက် ဒေါင်းခြင်း (Link မှန်အောင် ပြင်ထားသည်)
+# ၃။ Architecture အလိုက် ဖိုင်များကို မှန်ကန်စွာ ဒေါင်းယူခြင်း
 ARCH=$(getprop ro.product.cpu.abi)
-# Base URL ကို သတ်မှတ်ထားခြင်းဖြင့် မှားနိုင်ခြေ နည်းသွားပါမည်
 BASE="https://raw.githubusercontent.com/sandar18705-del/Neko/main"
 
 if [[ "$ARCH" == *"arm64"* ]]; then
-    echo -e "${GREEN}[+] 64-bit Device တွေ့ရှိရပါသည်...${NC}"
-    # ဤနေရာတွင် ဖိုင်နာမည်ကို 'device34mmh_64bit.so' ဟု ပြင်ထားပါသည်
-    curl -Lk -o device34Neko.so "$BASE/device34mmh_64bit.so"
+    echo -e "${GREEN}[+] 64-bit Device detected. Downloading 64-bit library...${NC}"
+    # 64-bit ဖိုင်အမည် device34Neko_64bit.so ကို ဒေါင်းပြီး device34Neko.so အဖြစ် သိမ်းမည်
+    curl -Lk "$BASE/device34Neko_64bit.so" -o device34Neko.so
 else
-    echo -e "${GREEN}[+] 32-bit Device တွေ့ရှိရပါသည်...${NC}"
-    curl -Lk -o device34Neko.so "$BASE/device34Neko.so"
+    echo -e "${GREEN}[+] 32-bit Device detected. Downloading 32-bit library...${NC}"
+    # 32-bit ဖိုင်အမည် device34Neko.so ကို တိုက်ရိုက်ဒေါင်းမည်
+    curl -Lk "$BASE/device34Neko.so" -o device34Neko.so
 fi
 
-# ၄။ Runner ဖိုင်ဒေါင်းခြင်း
-curl -Lk -o device34Neko_run.py "$BASE/device34Neko_run.py"
+# Runner Python ဖိုင်ကို ဒေါင်းယူခြင်း
+echo -e "${BLUE}[*] Downloading runner script...${NC}"
+curl -Lk "$BASE/device34Neko_run.py" -o device34Neko_run.py
 
-# ၅။ အောင်မြင်ကြောင်း စစ်ဆေးခြင်း
+# ၄။ အောင်မြင်ကြောင်း စစ်ဆေးခြင်း
 if [ -s "device34Neko.so" ]; then
-    echo -e "\n${GREEN}[✔] အကုန်လုံး အဆင်ပြေသွားပါပြီ!${NC}"
-    echo -e "${YELLOW}အသုံးပြုရန်:${NC}"
-    echo -e "${GREEN}cd ~/Neko && python device34Neko_run.py${NC}"
+    echo -e "\n${GREEN}[✔] Installation Successful!${NC}"
+    echo -e "${YELLOW}Starting the script...${NC}"
+    # Python script ကို တန်းပြီး run မည်
+    python device34Neko_run.py
 else
-    echo -e "${RED}[!] Error: .so ဖိုင် ဒေါင်းလုဒ်ဆွဲခြင်း မအောင်မြင်ပါ။ (Link မှားနေနိုင်ပါသည်)${NC}"
+    echo -e "${RED}[!] Error: Download failed! Please check your file names on GitHub.${NC}"
 fi

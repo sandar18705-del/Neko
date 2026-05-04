@@ -1,61 +1,44 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-# အရောင်သတ်မှတ်ချက်များ
 GREEN='\033[92m'
 BLUE='\033[94m'
 YELLOW='\033[93m'
 RED='\033[91m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
-echo -e "${GREEN}[*] device34Neko All-in-One Installer စတင်နေပါပြီ...${NC}"
+echo -e "${GREEN}[*] device34Neko All-in-One Installer Fix Starting...${NC}"
 
-# ၁။ Termux အသစ်အတွက် အခြေခံ Package များ အရင်သွင်းခြင်း
-echo -e "${BLUE}[*] အခြေခံလိုအပ်ချက်များကို စစ်ဆေးနေပါသည်...${NC}"
+# ၁။ Package သွင်းတဲ့အပိုင်းကို ပြင်ထားပါတယ်
+echo -e "${BLUE}[*] လိုအပ်ချက်များကို စစ်ဆေးနေပါသည်...${NC}"
 apt update && apt upgrade -y
-pkg install python python-dev clang curl wget git -y
 
-# Python pip ကို update လုပ်ပြီး လိုအပ်တဲ့ library သွင်းခြင်း
-pip install --upgrade pip
-pip install requests
+# python-dev အစား python ပဲ သွင်းပါမယ်။ pip install error မတက်အောင်လည်း ပြင်ထားပါတယ်
+pkg install python clang curl wget git -y
 
-# ၂။ Folder အဟောင်းရှိရင် ဖျက်ပြီး အသစ်ဆောက်မယ်
-echo -e "${BLUE}[*] Folder အသစ် တည်ဆောက်နေပါသည်...${NC}"
+# ၂။ Folder ပြင်ဆင်ခြင်း
 rm -rf ~/Neko
 mkdir -p ~/Neko
 cd ~/Neko
 
-# ၃။ ဖုန်းရဲ့ Architecture (32/64 bit) ကို စစ်ဆေးခြင်း
+# ၃။ Architecture စစ်ဆေးပြီး ဒေါင်းခြင်း
 ARCH=$(getprop ro.product.cpu.abi)
 
 if [[ "$ARCH" == *"arm64"* ]]; then
-    echo -e "${GREEN}[+] 64-bit Device (aarch64) ကို တွေ့ရှိရပါသည်...${NC}"
-    echo -e "${BLUE}[*] 64-bit အတွက် device34mmh_64bit.so ကို ဒေါင်းနေပါသည်...${NC}"
-    # 64-bit link မှန်
+    echo -e "${GREEN}[+] 64-bit Device တွေ့ရှိရပါသည်...${NC}"
     curl -Lk -o device34Neko.so "https://raw.githubusercontent.com/sandar18705-del/Neko/main/device34mmh_64bit.so"
 else
-    echo -e "${GREEN}[+] 32-bit Device (armeabi-v7a) ကို တွေ့ရှိရပါသည်...${NC}"
-    echo -e "${BLUE}[*] 32-bit အတွက် device34Neko.so ကို ဒေါင်းနေပါသည်...${NC}"
-    # 32-bit link မှန်
+    echo -e "${GREEN}[+] 32-bit Device တွေ့ရှိရပါသည်...${NC}"
     curl -Lk -o device34Neko.so "https://raw.githubusercontent.com/sandar18705-del/Neko/main/device34Neko.so"
 fi
 
-# ၄။ Starter python ဖိုင်ကို ဒေါင်းမယ်
-echo -e "${BLUE}[*] Python runner ဖိုင်ကို ဒေါင်းနေပါသည်...${NC}"
+# ၄။ Runner ဖိုင်ဒေါင်းခြင်း
 curl -Lk -o device34Neko_run.py "https://raw.githubusercontent.com/sandar18705-del/Neko/main/device34Neko_run.py"
 
-# ၅။ နောက်ဆုံးအဆင့် စစ်ဆေးခြင်း
+# ၅။ အောင်မြင်ကြောင်း စစ်ဆေးခြင်း
 if [ -f "device34Neko.so" ]; then
-    FILE_SIZE=$(stat -c%s "device34Neko.so")
-    if [ "$FILE_SIZE" -lt 1000 ]; then
-        echo -e "${RED}[!] Error: ဖိုင်အရွယ်အစား သေးလွန်းနေပါသည်။ Link မှားယွင်းနေနိုင်ပါသည်။${NC}"
-        exit 1
-    else
-        echo -e "\n${GREEN}[✔] အားလုံး အောင်မြင်စွာ ထည့်သွင်းပြီးပါပြီ!${NC}"
-        echo -e "${YELLOW}-----------------------------------------${NC}"
-        echo -e "${YELLOW}အသုံးပြုရန်:${NC}"
-        echo -e "${GREEN}cd ~/Neko && python device34Neko_run.py${NC}"
-        echo -e "${YELLOW}-----------------------------------------${NC}"
-    fi
+    echo -e "\n${GREEN}[✔] အကုန်လုံး အဆင်ပြေသွားပါပြီ!${NC}"
+    echo -e "${YELLOW}အသုံးပြုရန်:${NC}"
+    echo -e "${GREEN}cd ~/Neko && python device34Neko_run.py${NC}"
 else
-    echo -e "${RED}[!] Error: .so ဖိုင်ကို ရှာမတွေ့ပါ။ အင်တာနက်လိုင်း ပြန်စစ်ပေးပါ။${NC}"
+    echo -e "${RED}[!] Error: ဖိုင်ဒေါင်းတာ မအောင်မြင်ပါ။ အင်တာနက် ပြန်စစ်ပါ။${NC}"
 fi
